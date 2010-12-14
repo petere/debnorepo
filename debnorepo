@@ -1,0 +1,110 @@
+#!/usr/bin/perl
+
+=head1 NAME
+
+debnorepo - find installed Debian packages without repository
+
+=head1 SYNOPSIS
+
+B<debnorepo>
+
+=head1 DESCRIPTION
+
+B<debnorepo> lists packages that are installed but are not found in
+any remote APT repositories (C<http> or C<ftp> method).  This could
+mean that the package has been removed, or that the package should be
+upgraded but your APT configuration prevents an automatic upgrade, a
+typical situation with packages from experimental.  Using B<apt-cache>
+policy is a way to analyze the situation.
+
+A legitimate exception is that you installed the package directly and
+it is not supposed to be in any repository.  You can prevent such
+packages from being listed by B<debnorepo> by giving them a positive
+pin priority.  That means putting something like this into
+F</etc/apt/preferences>:
+
+ Explanation: override debnorepo
+ Package: my-local-package
+ Pin: version *
+ Pin-Priority: 1
+
+=cut
+
+use Getopt::Long;
+use Term::ReadKey;
+use Text::Wrap;
+
+@results = ();
+my $ignore_available_upgrades = 0;
+GetOptions("ignore-available-upgrades|U" => \$ignore_available_upgrades);
+
+foreach my $line (`dpkg --get-selections | egrep '	(install|hold)' | awk '{print \$1}' | xargs -r apt-cache policy`) {
+    chomp $line;
+
+    if ($line =~ /^([a-z0-9-]+):/) {
+	defined($pkg) && push @results, $pkg unless $has_repo || $no_repo_pinned;
+	$pkg = $1;
+	$found_installed = 0;
+	$found_candidate = 0;
+	$has_repo = 0;
+	$no_repo_pinned = 0;
+    } elsif ($line =~ /\*\*\* \S+ (\d+)/) {
+	$found_installed = 1;
+	$no_repo_pinned = 1 if $1 > 0;
+    } elsif ($line =~ /^     \d/) {
+	$found_candidate = 1;
+    } elsif ($line !~ /^        /) {
+	$found_installed = 0;
+	$found_candiate = 0;
+    } elsif ($found_installed && $line =~ /^        \d+ (http|ftp):/) {
+	$has_repo = 1;
+    } elsif ($found_candidate && $line =~ /^        (\d+) (http|ftp):/) {
+	$has_repo = 1 if $1 ge 100 and !$ignore_available_upgrades;
+    }
+}
+push @results, $pkg unless $has_repo || $no_repo_pinned;
+
+my ($width, $height, $wp, $hp) = GetTerminalSize();
+$Text::Wrap::columns = $width;
+if (@results) {
+    print "Packages without repository:\n";
+    print wrap('  ', '  ', join(' ', @results)), "\n";
+    #exit 1;
+}
+
+=head1 NOTES
+
+It can be useful to call B<debnorepo> automatically after calls to
+B<dpkg>.  You can add something like the following to F<apt.conf>:
+
+ Dpkg::Post-Invoke { "debnorepo"; };
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright (C) 2007-2009 Christoph Berg <myon@debian.org>
+Copyright (C) 2009-2010 Peter Eisentraut <petere@debian.org>
+
+Permission is hereby granted, free of charge, to any person
+obtaining a copy of this software and associated documentation
+files (the "Software"), to deal in the Software without
+restriction, including without limitation the rights to use,
+copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the
+Software is furnished to do so, subject to the following
+conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+OTHER DEALINGS IN THE SOFTWARE.
+
+=head1 SEE ALSO
+
+apt-cache(8), deborphan(1)
