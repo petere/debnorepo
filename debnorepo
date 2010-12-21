@@ -30,13 +30,18 @@ F</etc/apt/preferences>:
 
 =cut
 
+use strict;
+use warnings;
+
 use Getopt::Long;
 use Term::ReadKey;
 use Text::Wrap;
 
-@results = ();
+my @results = ();
 my $ignore_available_upgrades = 0;
 GetOptions("ignore-available-upgrades|U" => \$ignore_available_upgrades);
+
+my ($pkg, $has_repo, $no_repo_pinned, $found_installed, $found_candidate);
 
 foreach my $line (`dpkg --get-selections | egrep '	(install|hold)' | awk '{print \$1}' | xargs -r apt-cache policy`) {
     chomp $line;
@@ -55,7 +60,7 @@ foreach my $line (`dpkg --get-selections | egrep '	(install|hold)' | awk '{print
 	$found_candidate = 1;
     } elsif ($line !~ /^        /) {
 	$found_installed = 0;
-	$found_candiate = 0;
+	$found_candidate = 0;
     } elsif ($found_installed && $line =~ /^        \d+ (http|ftp):/) {
 	$has_repo = 1;
     } elsif ($found_candidate && $line =~ /^        (\d+) (http|ftp):/) {
