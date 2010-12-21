@@ -1,0 +1,22 @@
+Source: debnorepo
+Section: admin
+Priority: optional
+Maintainer: Peter Eisentraut <petere@debian.org>
+Build-Depends: debhelper (>=7)
+Standards-Version: 3.9.1
+Homepage: http://github.com/petere/debnorepo
+Vcs-Browser: http://github.com/petere/debnorepo
+Vcs-Git: git://github.com/petere/debnorepo.git
+
+Package: debnorepo
+Architecture: all
+Depends: ${misc:Depends}, ${perl:Depends}, libterm-readkey-perl
+Description: find installed Debian packages without repository
+ debnorepo lists packages that are installed but are not found in
+ any remote APT repositories (http or ftp method).  This could
+ mean that the package has been removed, or that the package should be
+ upgraded but your APT configuration prevents an automatic upgrade, a
+ typical situation with packages from experimental.
+ .
+ This tool is useful for hooking into manual uses of apt-get or for
+ automatic monitoring of package installations.

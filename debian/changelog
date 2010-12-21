@@ -1,0 +1,5 @@
+debnorepo (0.1.0) UNRELEASED; urgency=low
+
+  * Initial release
+
+ -- Peter Eisentraut <petere@debian.org>  Mon, 20 Dec 2010 23:29:20 +0200
