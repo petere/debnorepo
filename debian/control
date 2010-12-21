@@ -3,6 +3,7 @@ Section: admin
 Priority: optional
 Maintainer: Peter Eisentraut <petere@debian.org>
 Build-Depends: debhelper (>=7)
+Build-Depends-Indep: perl
 Standards-Version: 3.9.1
 Homepage: http://github.com/petere/debnorepo
 Vcs-Browser: http://github.com/petere/debnorepo
