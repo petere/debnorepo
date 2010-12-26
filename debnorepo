@@ -69,13 +69,11 @@ foreach my $line (`dpkg --get-selections | egrep '	(install|hold)' | awk '{print
 }
 push @results, $pkg unless $has_repo || $no_repo_pinned;
 
-my ($width, $height, $wp, $hp) = GetTerminalSize();
-$Text::Wrap::columns = $width;
-if (@results) {
-    print "Packages without repository:\n";
-    print wrap('  ', '  ', join(' ', @results)), "\n";
-    #exit 1;
-}
+exit 0 unless @results;
+
+$Text::Wrap::columns = -t STDOUT ? (GetTerminalSize())[0] : 78;
+print "Packages without repository:\n";
+print wrap('  ', '  ', join(' ', @results)), "\n";
 
 =head1 NOTES
 
