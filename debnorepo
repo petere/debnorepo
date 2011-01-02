@@ -73,7 +73,7 @@ exit 0 unless @results;
 
 $Text::Wrap::columns = -t STDOUT ? (GetTerminalSize())[0] : 78;
 print "Packages without repository:\n";
-print wrap('  ', '  ', join(' ', @results)), "\n";
+print wrap('  ', '  ', join(' ', sort @results)), "\n";
 
 =head1 NOTES
 
