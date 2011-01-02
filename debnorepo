@@ -46,7 +46,7 @@ my ($pkg, $has_repo, $no_repo_pinned, $found_installed, $found_candidate);
 foreach my $line (`dpkg --get-selections | egrep '	(install|hold)' | awk '{print \$1}' | xargs -r apt-cache policy`) {
     chomp $line;
 
-    if ($line =~ /^([a-z0-9-]+):/) {
+    if ($line =~ /^([a-z0-9.+-]+):/) {
 	defined($pkg) && push @results, $pkg unless $has_repo || $no_repo_pinned;
 	$pkg = $1;
 	$found_installed = 0;
