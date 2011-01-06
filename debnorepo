@@ -61,9 +61,9 @@ foreach my $line (`dpkg --get-selections | egrep '	(install|hold)' | awk '{print
     } elsif ($line !~ /^        /) {
 	$found_installed = 0;
 	$found_candidate = 0;
-    } elsif ($found_installed && $line =~ /^        \d+ (http|ftp):/) {
+    } elsif ($found_installed && $line =~ /^        +\d+ (http|ftp):/) {
 	$has_repo = 1;
-    } elsif ($found_candidate && $line =~ /^        (\d+) (http|ftp):/) {
+    } elsif ($found_candidate && $line =~ /^        +(\d+) (http|ftp):/) {
 	$has_repo = 1 if $1 ge 100 and !$ignore_available_upgrades;
     }
 }
