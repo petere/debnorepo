@@ -37,10 +37,23 @@ use Getopt::Long;
 use Term::ReadKey;
 use Text::Wrap;
 
-my @results = ();
+=head1 OPTIONS
+
+=over 4
+
+=item B<-U>, B<--include-available-upgrades>
+
+Normally, packages that have available upgrades are not listed.  This
+option includes them.
+
+=back
+
+=cut
+
 my $include_available_upgrades = 0;
 GetOptions("include-available-upgrades|U" => \$include_available_upgrades);
 
+my @results = ();
 my ($pkg, $has_repo, $no_repo_pinned, $found_installed, $found_candidate);
 
 foreach my $line (`dpkg --get-selections | egrep '	(install|hold)' | awk '{print \$1}' | xargs -r apt-cache policy`) {
