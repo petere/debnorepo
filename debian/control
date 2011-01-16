@@ -11,7 +11,8 @@ Vcs-Git: git://github.com/petere/debnorepo.git
 
 Package: debnorepo
 Architecture: all
-Depends: ${misc:Depends}, ${perl:Depends}, libterm-readkey-perl
+Depends: ${misc:Depends}, ${perl:Depends}
+Recommends: libterm-readkey-perl
 Description: find installed Debian packages without repository
  debnorepo lists packages that are installed but are not found in
  any remote APT repositories (http or ftp method).  This could

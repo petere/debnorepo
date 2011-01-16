@@ -34,8 +34,6 @@ use strict;
 use warnings;
 
 use Getopt::Long;
-use Term::ReadKey;
-use Text::Wrap;
 
 =head1 OPTIONS
 
@@ -46,12 +44,18 @@ use Text::Wrap;
 Normally, packages that have available upgrades are not listed.  This
 option includes them.
 
+=item B<-N>, B<--nagios>
+
+Produce Nagios-compatible output.
+
 =back
 
 =cut
 
 my $include_available_upgrades = 0;
-GetOptions("include-available-upgrades|U" => \$include_available_upgrades) or exit(1);
+my $nagios = 0;
+GetOptions("include-available-upgrades|U" => \$include_available_upgrades,
+	   "nagios|N" => \$nagios) or exit(3);
 
 my @results = ();
 my ($pkg, $has_repo, $no_repo_pinned, $found_installed, $found_candidate);
@@ -82,11 +86,31 @@ foreach my $line (`dpkg --get-selections | egrep '	(install|hold)' | awk '{print
 }
 push @results, $pkg unless $has_repo || $no_repo_pinned;
 
-exit 0 unless @results;
+if ($nagios) {
+    if (@results) {
+	printf "WARNING: %d packages without repository\n", scalar(@results);
+	print "$_\n" foreach (sort @results);
+	exit 1;
+    } else {
+	print "OK: no packages without repository\n";
+	exit 0;
+    }
+} else {
+    exit 0 unless @results;
 
-$Text::Wrap::columns = -t STDOUT ? (GetTerminalSize())[0] : 78;
-print "Packages without repository:\n";
-print wrap('  ', '  ', join(' ', sort @results)), "\n";
+    use Term::ReadKey;
+    use Text::Wrap;
+
+    $Text::Wrap::columns = -t STDOUT ? (GetTerminalSize())[0] : 78;
+    print "Packages without repository:\n";
+    print wrap('  ', '  ', join(' ', sort @results)), "\n";
+}
+
+=head1 RETURN VALUE
+
+0 if no packages without repository were found, 1 if such packages
+were found, 3 in case of any other kind of error.  (This includes the
+Nagios mode, where 1 means warning and 3 means unknown.)
 
 =head1 NOTES
 
