@@ -3,6 +3,7 @@ bindir = $(prefix)/bin
 mandir = $(prefix)/share/man
 
 all: debnorepo debnorepo.8
+	perl -c $<
 
 debnorepo.8: debnorepo
 	podchecker -warnings $<
