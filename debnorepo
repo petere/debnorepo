@@ -38,8 +38,8 @@ use Term::ReadKey;
 use Text::Wrap;
 
 my @results = ();
-my $ignore_available_upgrades = 0;
-GetOptions("ignore-available-upgrades|U" => \$ignore_available_upgrades);
+my $include_available_upgrades = 0;
+GetOptions("include-available-upgrades|U" => \$include_available_upgrades);
 
 my ($pkg, $has_repo, $no_repo_pinned, $found_installed, $found_candidate);
 
@@ -64,7 +64,7 @@ foreach my $line (`dpkg --get-selections | egrep '	(install|hold)' | awk '{print
     } elsif ($found_installed && $line =~ /^        +\d+ (http|ftp):/) {
 	$has_repo = 1;
     } elsif ($found_candidate && $line =~ /^        +(\d+) (http|ftp):/) {
-	$has_repo = 1 if $1 ge 100 and !$ignore_available_upgrades;
+	$has_repo = 1 if $1 ge 100 and !$include_available_upgrades;
     }
 }
 push @results, $pkg unless $has_repo || $no_repo_pinned;
