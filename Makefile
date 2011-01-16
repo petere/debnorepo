@@ -5,6 +5,7 @@ mandir = $(prefix)/share/man
 all: debnorepo debnorepo.8
 
 debnorepo.8: debnorepo
+	podchecker -warnings $<
 	pod2man --center='debnorepo' --release='Debian' --section=8 $< $@
 
 install: all
