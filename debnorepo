@@ -6,7 +6,7 @@ debnorepo - find installed Debian packages without repository
 
 =head1 SYNOPSIS
 
-B<debnorepo>
+B<debnorepo> [I<OPTION>]...
 
 =head1 DESCRIPTION
 
@@ -34,6 +34,7 @@ use strict;
 use warnings;
 
 use Getopt::Long;
+use Pod::Usage;
 
 =head1 OPTIONS
 
@@ -48,14 +49,21 @@ option includes them.
 
 Produce Nagios-compatible output.
 
+=item B<--help>
+
+Print out usage information.
+
 =back
 
 =cut
 
 my $include_available_upgrades = 0;
 my $nagios = 0;
+my $help = 0;
 GetOptions("include-available-upgrades|U" => \$include_available_upgrades,
-	   "nagios|N" => \$nagios) or exit(3);
+	   "nagios|N" => \$nagios,
+	   "help" => \$help) or exit(3);
+pod2usage(0) if $help;
 
 my @results = ();
 my ($pkg, $has_repo, $no_repo_pinned, $found_installed, $found_candidate);
