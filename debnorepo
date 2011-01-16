@@ -51,7 +51,7 @@ option includes them.
 =cut
 
 my $include_available_upgrades = 0;
-GetOptions("include-available-upgrades|U" => \$include_available_upgrades);
+GetOptions("include-available-upgrades|U" => \$include_available_upgrades) or exit(1);
 
 my @results = ();
 my ($pkg, $has_repo, $no_repo_pinned, $found_installed, $found_candidate);
