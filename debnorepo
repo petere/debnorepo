@@ -85,7 +85,7 @@ B<dpkg>.  You can add something like the following to F<apt.conf>:
 =head1 COPYRIGHT AND LICENSE
 
 Copyright (C) 2007-2009 Christoph Berg <myon@debian.org>
-Copyright (C) 2009-2010 Peter Eisentraut <petere@debian.org>
+Copyright (C) 2009-2011 Peter Eisentraut <petere@debian.org>
 
 Permission is hereby granted, free of charge, to any person
 obtaining a copy of this software and associated documentation
