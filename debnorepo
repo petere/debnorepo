@@ -60,6 +60,7 @@ Print out usage information.
 my $include_available_upgrades = 0;
 my $nagios = 0;
 my $help = 0;
+Getopt::Long::Configure("bundling");
 GetOptions("include-available-upgrades|U" => \$include_available_upgrades,
 	   "nagios|N" => \$nagios,
 	   "help" => \$help) or exit(3);
